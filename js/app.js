@@ -4,6 +4,8 @@ let rightIndex;
 let centerIndex;
 let attempt=1;
 let votes=[];
+let views=[];
+let maxAttempt=25;
 const names = ['bag', 'banana', 'bathroom', 'boots', 'breakfast', 'bubblegum', 'chair', 'cthulhu', 'dog-duck', 'dragon', 'pen', 'pet-sweep', 'scissors', 'shark','tauntaun', 'unicorn', 'water-can', 'wine-glass'];
 
 const leftImage = document.getElementById('leftImage');
@@ -32,27 +34,30 @@ function render(){
   leftImage.src = Assets.all[leftIndex].path;
   leftImage.alt = Assets.all[leftIndex].name;
   leftImage.title = Assets.all[leftIndex].name;
+  Assets.all[leftIndex].views++;
   // leftImage.all[leftIndex].views++
   console.log(leftIndex);
 
   rightIndex = randomNumber(0,Assets.all.length-1);
-// while (rightIndex.alt=== leftIndex.alt)
-// {
-//   rightIndex = randomNumber(0,Assets.all.length-1);
-// }
+if (rightIndex===leftIndex)
+{
+  rightIndex = randomNumber(0,Assets.all.length-1);
+}
   rightImage.src = Assets.all[rightIndex].path;
   rightImage.alt = Assets.all[rightIndex].name;
   rightImage.title = Assets.all[rightIndex].name;
+  Assets.all[rightIndex].views++;
   // rightImage.all[rightIndex].views++;
   console.log(rightIndex);
   centerIndex = randomNumber(0,Assets.all.length-1);
-  // while (centerIndex.alt===rightIndex.alt||centerIndex.alt===leftIndex.alt)
-  // {
-  //   centerIndex = randomNumber(0,Assets.all.length-1);
-  // }
+  if (centerIndex===rightIndex||centerIndex===leftIndex)
+  {
+    centerIndex = randomNumber(0,Assets.all.length-1);
+  }
   centerImage.src = Assets.all[centerIndex].path;
   centerImage.alt = Assets.all[centerIndex].name;
   centerImage.title = Assets.all[centerIndex].name;
+  Assets.all[centerIndex].views++;
   // centerImage.all[centerIndex].views++;
   console.log(centerIndex);};
   
@@ -61,7 +66,7 @@ function render(){
 function handelClick(event){
   
   if(event.target.id !== 'images-section'){
-    if (attempt<10){
+    if (attempt<maxAttempt){
       attempt++;
     if(event.target.id === rightImage.id)
     {
@@ -79,14 +84,15 @@ function handelClick(event){
     let ulEl=document.getElementById('displayList');
     let liEl;
     for(let i =0;i<Assets.all.length;i++){
-    
+      votes.push(Assets.all[i].votes);
+      views.push(Assets.all[i].views);
     liEl=document.createElement('li');
     ulEl.appendChild(liEl);
-    liEl.textContent = `${Assets.all.alt[i]} had ${Assets.all.votes[i]} votes, and was seen 5 times.`;
-       } 
+    liEl.textContent = `${Assets.all[i].name} had ${Assets.all[i].votes} votes, and was seen ${Assets.all[i].views} times.`;
+       } chart();
         imagesSection.removeEventListener('click',handelClick);
         votes.push(Assets.all[i].votes) ;
- }   chart(); }
+ }    }
 
   render();
  
@@ -121,11 +127,17 @@ function chart(){
         data: {
             labels: names,
             datasets: [{
-                label: 'my votes',
+                label: 'assets votes',
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgb(255, 99, 132)',
-                data: votes
-            }]
+                data:votes 
+            },
+            {
+              label: 'assets views',
+              backgroundColor: 'green',
+              borderColor: 'rgb(255, 99, 132)',
+              data:views 
+          }]
         },
     
         // Configuration options go here
